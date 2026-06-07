@@ -4236,3 +4236,642 @@ a.team-card:hover .team-ig-cta {
 
 a.team-card:hover .img-corner,
 .trio-card:hover    .img-corner { opacity: 1; transform: translate(0,0); }
+
+/* ======================================================================================================= */
+
+
+/* ============================================================
+   JRCK COUNTDOWN SECTION — Paste into assets/css/style.css
+   (or link as a separate stylesheet after the main one)
+   Design: Cinematic Dark Moto · Glassmorphism · Amber Glow
+   ============================================================ */
+
+/* ── SECTION BASE ─────────────────────────────────────────── */
+.jrck-countdown {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    #050505 0%,
+    #0a0a08 40%,
+    #0d0b07 70%,
+    #090909 100%
+  );
+  padding: 100px 24px 110px;
+  isolation: isolate;
+  z-index: 1;
+}
+
+/* ── PARTICLE CANVAS ──────────────────────────────────────── */
+.jrck-cd-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+/* ── ROTATING GLOW ORB ────────────────────────────────────── */
+.jrck-cd-glow-orb {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(800px, 110vw);
+  height: min(800px, 110vw);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(246, 126, 42, 0.08) 0%,
+    rgba(246, 126, 42, 0.03) 40%,
+    transparent 70%
+  );
+  animation: cdOrbSpin 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes cdOrbSpin {
+  0%   { transform: translate(-50%, -50%) rotate(0deg) scale(1);   }
+  50%  { transform: translate(-50%, -50%) rotate(180deg) scale(1.08); }
+  100% { transform: translate(-50%, -50%) rotate(360deg) scale(1);  }
+}
+
+/* ── SHIMMER SWEEP ────────────────────────────────────────── */
+.jrck-cd-shimmer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+.jrck-cd-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -80%;
+  width: 60%; height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(246, 126, 42, 0.04) 45%,
+    rgba(255, 200, 100, 0.06) 50%,
+    rgba(246, 126, 42, 0.04) 55%,
+    transparent 100%
+  );
+  animation: cdSectionShimmer 7s ease-in-out infinite;
+}
+
+@keyframes cdSectionShimmer {
+  0%   { left: -80%; opacity: 0; }
+  10%  { opacity: 1; }
+  60%  { left: 120%; opacity: 1; }
+  70%  { opacity: 0; }
+  100% { left: 120%; opacity: 0; }
+}
+
+/* ── INNER CONTAINER ──────────────────────────────────────── */
+.jrck-cd-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  text-align: center;
+}
+
+/* ── BADGE ────────────────────────────────────────────────── */
+.jrck-cd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(246, 126, 42, 0.12);
+  border: 1px solid rgba(246, 126, 42, 0.35);
+  border-radius: 100px;
+  padding: 6px 20px;
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 28px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 18px rgba(246, 126, 42, 0.15);
+}
+
+.jrck-cd-badge-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  animation: cdBadgePulse 1.6s ease-in-out infinite;
+}
+
+@keyframes cdBadgePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ── TITLE ────────────────────────────────────────────────── */
+.jrck-cd-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 8vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 6px;
+  /* Shimmer text effect */
+  background: linear-gradient(
+    100deg,
+    #ffffff 0%,
+    #f0ece4 30%,
+    #F67E2A 50%,
+    #f0ece4 70%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: cdTitleShimmer 4s linear infinite;
+}
+
+.jrck-cd-title-accent {
+  color: var(--orange);
+  -webkit-text-fill-color: unset;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  font-family: var(--font-display);
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* Re-apply shimmer only to the parent that supports it */
+.jrck-cd-title {
+  -webkit-text-fill-color: transparent;
+}
+
+/* Simpler approach: use outline for accent span */
+.jrck-cd-title {
+  background: linear-gradient(100deg, #fff 0%, #f0ece4 35%, #F9A55D 50%, #f0ece4 65%, #fff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: cdTitleShimmer 4s linear infinite;
+}
+
+@keyframes cdTitleShimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* ── SUBTITLE ─────────────────────────────────────────────── */
+.jrck-cd-subtitle {
+  font-family: var(--font-heading);
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  font-weight: 300;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  color: var(--orange-light);
+  margin-bottom: 20px;
+  opacity: 0.85;
+}
+
+/* ── TAGLINE ──────────────────────────────────────────────── */
+.jrck-cd-tagline {
+  font-family: var(--font-body);
+  font-size: clamp(0.85rem, 2.2vw, 1.05rem);
+  font-weight: 300;
+  color: #aaa;
+  line-height: 1.7;
+  max-width: 540px;
+  margin-bottom: 52px;
+  letter-spacing: 0.3px;
+}
+
+/* ── TIMER WRAP ───────────────────────────────────────────── */
+.jrck-cd-timer-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 52px;
+  width: 100%;
+}
+
+/* ── GLOWING TIMER RING ───────────────────────────────────── */
+.jrck-cd-timer-ring {
+  position: absolute;
+  inset: -28px -36px;
+  border-radius: 28px;
+  border: 1.5px solid transparent;
+  background: linear-gradient(var(--dark), var(--dark)) padding-box,
+              linear-gradient(135deg, rgba(246,126,42,0.7), rgba(246,126,42,0.1), rgba(246,126,42,0.7)) border-box;
+  animation: cdRingGlow 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes cdRingGlow {
+  0%   { box-shadow: 0 0 15px rgba(246,126,42,0.15), inset 0 0 15px rgba(246,126,42,0.05); opacity: 0.7; }
+  100% { box-shadow: 0 0 40px rgba(246,126,42,0.35), 0 0 80px rgba(246,126,42,0.1), inset 0 0 20px rgba(246,126,42,0.08); opacity: 1; }
+}
+
+/* ── COUNTDOWN CARDS ROW ──────────────────────────────────── */
+.jrck-cd-cards {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── SINGLE CARD ──────────────────────────────────────────── */
+.jrck-cd-card {
+  position: relative;
+  min-width: 120px;
+  padding: 28px 20px 20px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(246, 126, 42, 0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+  cursor: default;
+}
+
+.jrck-cd-card:hover {
+  transform: translateY(-8px) scale(1.04);
+  border-color: rgba(246, 126, 42, 0.55);
+  box-shadow: 0 12px 40px rgba(246, 126, 42, 0.25),
+              0 0 0 1px rgba(246, 126, 42, 0.1);
+}
+
+/* Card inner content */
+.jrck-cd-card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Card ambient glow */
+.jrck-cd-card-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(246, 126, 42, 0.12) 0%,
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.jrck-cd-card:hover .jrck-cd-card-glow { opacity: 1; }
+
+/* Card top-edge accent line */
+.jrck-cd-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 20%; right: 20%;
+  height: 2px;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  transition: left 0.3s, right 0.3s;
+}
+.jrck-cd-card:hover::before {
+  left: 10%; right: 10%;
+}
+
+/* ── COUNTDOWN NUMBER ─────────────────────────────────────── */
+.jrck-cd-number {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 5rem);
+  line-height: 1;
+  letter-spacing: 2px;
+  color: var(--white);
+  transition: color 0.15s ease;
+}
+
+/* Pulse on each tick */
+.jrck-cd-number.jrck-cd-pulse {
+  animation: cdNumPulse 0.4s ease-out;
+}
+
+@keyframes cdNumPulse {
+  0%   { transform: scale(1);   color: var(--white); }
+  30%  { transform: scale(1.12); color: var(--orange); text-shadow: 0 0 20px rgba(246,126,42,0.8); }
+  100% { transform: scale(1);   color: var(--white); text-shadow: none; }
+}
+
+/* ── CARD LABEL ───────────────────────────────────────────── */
+.jrck-cd-label {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--orange);
+  opacity: 0.75;
+}
+
+/* ── SEPARATOR ────────────────────────────────────────────── */
+.jrck-cd-sep {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: var(--orange);
+  opacity: 0.4;
+  line-height: 1;
+  align-self: flex-start;
+  padding-top: 18px;
+  animation: cdSepBlink 1s step-start infinite;
+}
+
+@keyframes cdSepBlink {
+  0%, 49% { opacity: 0.4; }
+  50%, 100% { opacity: 0.1; }
+}
+
+/* ── STATUS TEXT ──────────────────────────────────────────── */
+.jrck-cd-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #888;
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 100px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.jrck-cd-status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #2ecc71;
+  box-shadow: 0 0 8px rgba(46,204,113,0.8);
+  flex-shrink: 0;
+  animation: cdStatusLive 1.8s ease-in-out infinite;
+}
+
+@keyframes cdStatusLive {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.4); opacity: 0.6; }
+}
+
+/* ── ENDED BLOCK ──────────────────────────────────────────── */
+.jrck-cd-ended {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 200px;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.jrck-cd-ended.jrck-cd-visible {
+  display: flex;
+}
+
+.jrck-cd-ended-msg {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  letter-spacing: 2px;
+  text-align: center;
+  line-height: 1.2;
+  color: var(--white);
+  text-shadow: 0 0 30px rgba(246,126,42,0.5);
+  animation: cdEndedFadeIn 1.2s ease forwards;
+  opacity: 0;
+}
+
+.jrck-cd-ended-msg.jrck-cd-glow-text {
+  background: linear-gradient(135deg, var(--orange-light), var(--orange), #fff5e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: cdEndedFadeIn 1.2s ease forwards, cdTitleShimmer 3s linear infinite;
+  background-size: 200% auto;
+}
+
+@keyframes cdEndedFadeIn {
+  0%   { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ── CONFETTI CANVAS ──────────────────────────────────────── */
+.jrck-cd-confetti {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.jrck-cd-confetti.jrck-cd-active {
+  opacity: 1;
+}
+
+/* ── RIDE DETAILS ROW ─────────────────────────────────────── */
+.jrck-cd-details {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(246, 126, 42, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  overflow: hidden;
+  margin-bottom: 40px;
+  width: 100%;
+  max-width: 640px;
+}
+
+.jrck-cd-detail-item {
+  flex: 1 1 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 22px 16px;
+  transition: background 0.25s ease;
+}
+
+.jrck-cd-detail-item:hover {
+  background: rgba(246, 126, 42, 0.07);
+}
+
+.jrck-cd-detail-divider {
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(246,126,42,0.3), transparent);
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+.jrck-cd-detail-icon {
+  font-size: 1.1rem;
+  color: var(--orange);
+  margin-bottom: 2px;
+}
+
+.jrck-cd-detail-label {
+  font-family: var(--font-heading);
+  font-size: 0.58rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #666;
+  font-weight: 600;
+}
+
+.jrck-cd-detail-value {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--white);
+}
+
+/* ── CTA BUTTON WRAP ──────────────────────────────────────── */
+.jrck-cd-cta-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.jrck-cd-cta {
+  padding: 14px 44px;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.jrck-cd-cta::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -60%;
+  width: 50%; height: 200%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.15), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+
+.jrck-cd-cta:hover::after {
+  left: 130%;
+}
+
+/* ── ENTRANCE ANIMATIONS ──────────────────────────────────── */
+[data-cd-anim="fade-up"] {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+[data-cd-anim="fade-up"].jrck-cd-animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-cd-delay="0"] { transition-delay: 0s; }
+[data-cd-delay="1"] { transition-delay: 0.1s; }
+[data-cd-delay="2"] { transition-delay: 0.2s; }
+[data-cd-delay="3"] { transition-delay: 0.3s; }
+[data-cd-delay="4"] { transition-delay: 0.45s; }
+[data-cd-delay="5"] { transition-delay: 0.6s; }
+[data-cd-delay="6"] { transition-delay: 0.75s; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .jrck-countdown {
+    padding: 72px 16px 80px;
+  }
+
+  .jrck-cd-card {
+    min-width: 80px;
+    padding: 20px 14px 16px;
+    border-radius: 14px;
+  }
+
+  .jrck-cd-number {
+    font-size: clamp(2.2rem, 9vw, 3.2rem);
+  }
+
+  .jrck-cd-sep {
+    font-size: 2rem;
+    padding-top: 14px;
+  }
+
+  .jrck-cd-timer-ring {
+    inset: -20px -20px;
+    border-radius: 20px;
+  }
+
+  .jrck-cd-cards {
+    gap: 8px;
+  }
+
+  .jrck-cd-details {
+    flex-direction: column;
+  }
+
+  .jrck-cd-detail-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(246,126,42,0.3), transparent);
+  }
+}
+
+@media (max-width: 480px) {
+  .jrck-cd-badge {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+  }
+
+  .jrck-cd-card {
+    min-width: 70px;
+    padding: 16px 10px 14px;
+  }
+
+  .jrck-cd-cards {
+    gap: 6px;
+  }
+
+  .jrck-cd-sep {
+    font-size: 1.6rem;
+    padding-top: 12px;
+  }
+
+  .jrck-cd-status {
+    font-size: 0.75rem;
+    padding: 8px 14px;
+    border-radius: 40px;
+  }
+}
