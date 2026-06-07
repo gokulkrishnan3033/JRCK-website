@@ -1707,7 +1707,8 @@ footer {
   box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(246,126,42,0.1);
 }
 .team-img {
-  height: 260px;
+  aspect-ratio: 1 / 1;
+  height: auto;
   overflow: hidden;
   position: relative;
   background: var(--dark3);
@@ -1715,16 +1716,22 @@ footer {
 .team-img img {
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: top;
+  object-position: top center;
   filter: brightness(0.85) grayscale(0.2);
-  transition: all var(--transition);
+  transition: filter var(--transition), transform var(--transition), opacity 0.5s ease;
+  opacity: 0;
+  display: block;
+}
+.team-img img.img-loaded {
+  opacity: 1;
 }
 .team-card:hover .team-img img {
   filter: brightness(1) grayscale(0);
   transform: scale(1.04);
 }
 .team-img-placeholder {
-  width: 100%; height: 100%;
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1733,6 +1740,7 @@ footer {
   font-size: 4rem;
   color: var(--orange);
   opacity: 0.4;
+  z-index: 1;
 }
 .team-role-tag {
   position: absolute;
@@ -1773,7 +1781,7 @@ footer {
   font-size: 0.65rem;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--gray-dark);
+  color: #fdf6f;;
   padding-top: 12px;
   border-top: 1px solid rgba(255,255,255,0.06);
 }
@@ -1797,8 +1805,14 @@ footer {
 .team-leader-img img {
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: top;
+  object-position: top center;
   filter: brightness(0.85);
+  transition: opacity 0.5s ease, filter 0.4s ease;
+  opacity: 0;
+  display: block;
+}
+.team-leader-img img.img-loaded {
+  opacity: 1;
 }
 .team-leader-body {
   padding: 48px 48px;
@@ -3347,3 +3361,878 @@ body {
   .ht-divider       { transition: none; }
   .ht-spine-dot     { transition: none; }
 }
+
+/* ============================================================
+   TEAM PAGE — PROFILE IMAGE ANIMATIONS & SQUARE CARDS
+   1:1 square profile images, shimmer hover, corner brackets,
+   scan-line animation, img-loaded fade-in
+   ============================================================ */
+
+/* Shimmer sweep overlay on team-img hover */
+.team-img-shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+.team-img-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(246,126,42,0.08) 50%,
+    rgba(255,255,255,0.04) 55%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: none;
+}
+.team-card:hover .team-img-shimmer::before {
+  animation: profileShimmer 0.7s ease forwards;
+}
+@keyframes profileShimmer {
+  0%   { left: -100%; opacity: 0; }
+  20%  { opacity: 1; }
+  100% { left: 130%; opacity: 0; }
+}
+
+/* Scan-line pulse for leader portrait images */
+.leader-img-scan {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+.leader-img-scan::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: 0; right: 0;
+  height: 35%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(246,126,42,0.055) 50%,
+    transparent 100%
+  );
+  animation: leaderScan 5s ease-in-out infinite;
+}
+@keyframes leaderScan {
+  0%   { top: -40%; }
+  100% { top: 140%; }
+}
+
+/* Corner brackets — show on card hover */
+.img-corner {
+  position: absolute;
+  width: 18px; height: 18px;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.img-corner--tl { top: 10px; left: 10px;   border-top: 2px solid var(--orange); border-left:  2px solid var(--orange); transform: translate(-4px, -4px); }
+.img-corner--tr { top: 10px; right: 10px;  border-top: 2px solid var(--orange); border-right: 2px solid var(--orange); transform: translate( 4px, -4px); }
+.img-corner--bl { bottom: 10px; left: 10px;  border-bottom: 2px solid var(--orange); border-left:  2px solid var(--orange); transform: translate(-4px,  4px); }
+.img-corner--br { bottom: 10px; right: 10px; border-bottom: 2px solid var(--orange); border-right: 2px solid var(--orange); transform: translate( 4px,  4px); }
+
+.team-card:hover .img-corner,
+.leader-equal-card:hover .img-corner {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* team-leader-img (President) corner brackets on section hover */
+.team-leader-card:hover .img-corner {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* ============================================================
+   EQUAL COMMAND ROW — Secretary + Vice President
+   Portrait-first, equal visual weight, mobile responsive
+   ============================================================ */
+
+.leaders-equal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* The card */
+.leader-equal-card {
+  background: var(--dark2);
+  border: 1px solid rgba(246,126,42,0.2);
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
+}
+.leader-equal-card:hover {
+  border-color: rgba(246,126,42,0.55);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 40px rgba(246,126,42,0.12);
+  transform: translateY(-5px);
+}
+
+/* Portrait — 1:1 square */
+.leader-equal-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--dark3);
+}
+.leader-equal-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  filter: brightness(0.82) grayscale(0.12) contrast(1.06);
+  transition: filter 0.55s ease, transform 0.6s ease, opacity 0.5s ease;
+  opacity: 0;
+}
+.leader-equal-img-wrap img.img-loaded { opacity: 1; }
+.leader-equal-card:hover .leader-equal-img-wrap img {
+  filter: brightness(0.92) grayscale(0) contrast(1.08);
+  transform: scale(1.035);
+}
+
+/* Placeholder letter shown when img not yet loaded / missing */
+.leader-img-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--dark3), var(--dark4));
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 14vw, 10rem);
+  color: var(--orange);
+  opacity: 0.22;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Dark bottom gradient on portrait */
+.leader-equal-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.88) 0%,
+    rgba(0,0,0,0.35) 45%,
+    transparent 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Role badge — top-left ribbon */
+.leader-equal-role-badge {
+  position: absolute;
+  top: 0; left: 0;
+  background: var(--orange);
+  color: var(--black);
+  font-family: var(--font-heading);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  padding: 7px 22px 7px 14px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  z-index: 4;
+  white-space: nowrap;
+}
+
+/* Bottom info strip — district + tag, sits on image bottom */
+.leader-img-bottom-strip {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 4;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 14px 16px 12px;
+  pointer-events: none;
+}
+.lib-district,
+.lib-since {
+  font-family: var(--font-heading);
+  font-size: 0.58rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+}
+.lib-since {
+  color: var(--orange);
+  opacity: 0.85;
+}
+
+/* Body section */
+.leader-equal-body {
+  padding: 26px 28px 30px;
+  position: relative;
+}
+.leader-equal-body::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(to right, var(--orange), rgba(246,126,42,0.2));
+}
+
+/* Rank row */
+.leader-equal-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.ler-rank-num {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  color: rgba(246,126,42,0.14);
+  line-height: 1;
+  flex-shrink: 0;
+}
+.ler-rank-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ler-rank-title {
+  font-family: var(--font-heading);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+.ler-rank-sub {
+  font-family: var(--font-heading);
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-dark);
+}
+
+/* Bio text */
+.leader-equal-bio {
+  font-size: 0.875rem;
+  color: var(--gray);
+  line-height: 1.75;
+  margin-top: 12px;
+  margin-bottom: 18px;
+}
+
+/* Tag pills */
+.leader-equal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+.leader-eq-tag {
+  display: inline-block;
+  padding: 4px 13px;
+  background: rgba(246,126,42,0.07);
+  border: 1px solid rgba(246,126,42,0.22);
+  font-family: var(--font-heading);
+  font-size: 0.57rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--orange);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.leader-equal-card:hover .leader-eq-tag {
+  background: rgba(246,126,42,0.14);
+  color: var(--orange-light);
+}
+
+/* Bike line */
+.leader-equal-bike {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gray-dark);
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.leader-equal-bike strong {
+  color: var(--orange);
+  font-weight: 700;
+}
+
+/* ============================================================
+   EQUAL ROW — RESPONSIVE
+   ============================================================ */
+
+/* Tablet: keep side by side but reduce font sizes */
+@media (max-width: 900px) {
+  .leaders-equal-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .leader-equal-body {
+    padding: 20px 20px 24px;
+  }
+  .ler-rank-num { font-size: 2.2rem; }
+  .leader-equal-bio { font-size: 0.82rem; }
+}
+
+/* Mobile: full-stack, image is 16:9 instead of square (less tall on small screens) */
+@media (max-width: 620px) {
+  .leaders-equal-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .leader-equal-img-wrap {
+    aspect-ratio: 4 / 3;
+  }
+  .leader-img-placeholder { font-size: 5rem; }
+  .leader-equal-body {
+    padding: 18px 18px 22px;
+  }
+  .ler-rank-num { font-size: 2rem; }
+  .leader-name-secondary { font-size: clamp(1.3rem, 6vw, 1.8rem); }
+}
+
+@media (max-width: 400px) {
+  .leader-equal-img-wrap { aspect-ratio: 3 / 2; }
+  .leader-equal-body { padding: 14px 14px 18px; }
+  .leader-equal-bio { font-size: 0.8rem; }
+  .leader-equal-tags { gap: 5px; }
+  .leader-eq-tag { font-size: 0.52rem; padding: 3px 10px; }
+}
+
+/* ============================================================
+   PRESIDENT CARD — add img-loaded for team-leader-img
+   ============================================================ */
+.team-leader-img {
+  position: relative;
+}
+.team-leader-img .leader-img-placeholder {
+  font-size: clamp(4rem, 10vw, 8rem);
+}
+
+/* ================================================================
+   TEAM PAGE v3 — EQUAL TRIO LEADERS + INSTAGRAM EVERYWHERE
+   ================================================================ */
+
+/* Intro paragraph */
+.leaders-intro {
+  font-size: 0.95rem;
+  color: var(--gray);
+  line-height: 1.8;
+  margin-top: 12px;
+  margin-bottom: 52px;
+  max-width: 600px;
+}
+
+/* ── LEADERS TRIO GRID ──────────────────────────────────────── */
+.leaders-trio {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+/* Each leader card is an <a> tag */
+.trio-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--dark2);
+  border: 1px solid rgba(246,126,42,0.18);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.38s ease,
+              box-shadow   0.38s ease,
+              transform    0.38s ease;
+  outline: none;
+}
+.trio-card:hover,
+.trio-card:focus-visible {
+  border-color: rgba(246,126,42,0.7);
+  box-shadow: 0 0 0 1px rgba(246,126,42,0.35),
+              0 28px 70px rgba(0,0,0,0.6),
+              0 0 50px rgba(246,126,42,0.1);
+  transform: translateY(-6px);
+}
+
+/* ── PORTRAIT IMAGE WRAP — 1:1 square ─────────────────────── */
+.trio-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--dark3);
+  cursor: pointer;
+}
+.trio-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  filter: brightness(0.88) contrast(1.05);
+  transition: transform 0.55s ease, filter 0.45s ease;
+}
+.trio-card:hover .trio-img-wrap img {
+  transform: scale(1.04);
+  filter: brightness(0.78) contrast(1.08);
+}
+
+/* ── RANK badge — top-left black pill ─────────────────────── */
+.trio-rank-badge {
+  position: absolute;
+  top: 14px; left: 14px;
+  z-index: 5;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid rgba(246,126,42,0.55);
+  color: var(--orange);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 3px;
+  padding: 4px 11px;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+/* ── ROLE ribbon — top-right orange tab ───────────────────── */
+.trio-role-ribbon {
+  position: absolute;
+  top: 0; right: 0;
+  z-index: 5;
+  background: var(--orange);
+  color: var(--black);
+  font-family: var(--font-heading);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  padding: 7px 14px 7px 20px;
+  clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── SCAN LINE animation ──────────────────────────────────── */
+.trio-scan {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+.trio-scan::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: 0; right: 0;
+  height: 30%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(246,126,42,0.07) 50%,
+    transparent 100%
+  );
+  animation: trioScan 4.5s linear infinite;
+}
+@keyframes trioScan {
+  from { top: -40%; }
+  to   { top: 130%; }
+}
+
+/* ── INSTAGRAM HOVER OVERLAY ──────────────────────────────── */
+.trio-ig-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(131,58,180,0.82) 0%,
+    rgba(193,53,132,0.82) 40%,
+    rgba(246,126,42,0.82) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.trio-card:hover .trio-ig-overlay,
+.trio-card:focus-visible .trio-ig-overlay {
+  opacity: 1;
+}
+.trio-ig-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(12px);
+  transition: transform 0.35s ease;
+}
+.trio-card:hover .trio-ig-inner {
+  transform: translateY(0);
+}
+.trio-ig-icon {
+  font-size: 2.8rem;
+  color: #fff;
+  filter: drop-shadow(0 2px 10px rgba(0,0,0,0.4));
+}
+.trio-ig-label {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+/* ── ALWAYS-VISIBLE pulsing IG dot — bottom-right ─────────── */
+.trio-ig-pulse {
+  position: absolute;
+  bottom: 12px; right: 12px;
+  z-index: 7;
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 0 rgba(253,29,29,0.55);
+  animation: igPulseRing 2.4s ease-out infinite;
+  pointer-events: none;
+}
+.trio-ig-pulse i {
+  font-size: 1rem;
+  color: #fff;
+}
+@keyframes igPulseRing {
+  0%   { box-shadow: 0 0 0 0 rgba(253,29,29,0.55); }
+  70%  { box-shadow: 0 0 0 10px rgba(253,29,29,0); }
+  100% { box-shadow: 0 0 0 0 rgba(253,29,29,0); }
+}
+
+/* ── CARD BODY ────────────────────────────────────────────── */
+.trio-body {
+  padding: 26px 26px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  position: relative;
+}
+/* orange top-bar */
+.trio-body::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(to right, var(--orange), transparent);
+}
+
+.trio-name {
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.2vw, 1.55rem);
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--white);
+  text-transform: uppercase;
+  margin: 0 0 4px;
+  line-height: 1.15;
+}
+.trio-role-line {
+  font-family: var(--font-heading);
+  font-size: 0.6rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 12px;
+}
+.trio-bio {
+  font-size: 0.84rem;
+  color: var(--gray);
+  line-height: 1.75;
+  margin: 12px 0 18px;
+}
+
+/* Stats row */
+.trio-stats {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 18px;
+}
+.trio-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 6px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.trio-stat:last-child { border-right: none; }
+.trio-stat-num {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--orange);
+  line-height: 1;
+}
+.trio-stat-lbl {
+  font-family: var(--font-heading);
+  font-size: 0.52rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fdf6f;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* Footer row: bike + ig chip */
+.trio-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.trio-bike {
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #fdf6f;
+}
+/* Instagram chip — always visible CTA */
+.trio-ig-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: linear-gradient(135deg, rgba(131,58,180,0.25), rgba(246,126,42,0.25));
+  border: 1px solid rgba(246,126,42,0.35);
+  font-family: var(--font-heading);
+  font-size: 0.58rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--orange);
+  transition: background 0.28s ease, border-color 0.28s ease;
+  white-space: nowrap;
+}
+.trio-card:hover .trio-ig-chip {
+  background: linear-gradient(135deg, rgba(131,58,180,0.5), rgba(246,126,42,0.5));
+  border-color: var(--orange);
+  color: #fff;
+}
+
+/* ── TRIO RESPONSIVE ──────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .leaders-trio {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .trio-body { padding: 20px 18px 22px; }
+  .trio-name  { font-size: clamp(1rem, 3vw, 1.3rem); }
+}
+@media (max-width: 780px) {
+  .leaders-trio {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .trio-card:nth-child(3) {
+    grid-column: 1 / -1;
+    max-width: 420px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+@media (max-width: 520px) {
+  .leaders-trio {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .trio-card:nth-child(3) {
+    grid-column: auto;
+    max-width: none;
+    margin: 0;
+  }
+  .trio-img-wrap { aspect-ratio: 4 / 3; }
+}
+
+/* ================================================================
+   TEAM GRID CARDS — as <a> links + Instagram hover overlay
+   ================================================================ */
+
+/* team-card is now an anchor — reset anchor styles */
+a.team-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+a.team-card:hover,
+a.team-card:focus-visible {
+  outline: none;
+}
+
+/* Image: 1:1 square */
+.team-img {
+  aspect-ratio: 1 / 1;
+  height: auto;
+  overflow: hidden;
+  position: relative;
+  background: var(--dark3);
+}
+.team-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  filter: brightness(0.88) contrast(1.04);
+  transition: transform 0.5s ease, filter 0.4s ease;
+}
+a.team-card:hover .team-img img {
+  transform: scale(1.05);
+  filter: brightness(0.75) contrast(1.06);
+}
+
+/* Instagram hover overlay (slides up) */
+.team-ig-overlay {
+  position: absolute;
+  bottom: -100%;
+  left: 0; right: 0;
+  height: 50%;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(
+    to top,
+    rgba(131,58,180,0.9) 0%,
+    rgba(193,53,132,0.85) 55%,
+    transparent 100%
+  );
+  transition: bottom 0.38s cubic-bezier(0.25,0.8,0.25,1);
+  pointer-events: none;
+}
+a.team-card:hover .team-ig-overlay,
+a.team-card:focus-visible .team-ig-overlay {
+  bottom: 0;
+}
+.team-ig-overlay i {
+  font-size: 1.6rem;
+  color: #fff;
+}
+.team-ig-overlay span {
+  font-family: var(--font-heading);
+  font-size: 0.58rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+}
+
+/* Always-visible pulsing IG dot on team cards */
+.team-ig-pulse-dot {
+  position: absolute;
+  bottom: 10px; right: 10px;
+  z-index: 7;
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: igPulseRing 2.8s ease-out infinite;
+  pointer-events: none;
+}
+.team-ig-pulse-dot i {
+  font-size: 0.78rem;
+  color: #fff;
+}
+
+/* Shimmer sweep stays the same */
+.team-img-shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+.team-img-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(246,126,42,0.08) 50%,
+    rgba(255,255,255,0.04) 55%,
+    transparent 100%
+  );
+  opacity: 0;
+}
+a.team-card:hover .team-img-shimmer::before {
+  animation: profileShimmer 0.7s ease forwards;
+}
+
+/* Role tag stays — push to front */
+.team-role-tag {
+  position: absolute;
+  top: 0; left: 0;
+  z-index: 8;
+}
+
+/* Instagram CTA at bottom of team-info */
+.team-ig-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 5px 14px;
+  background: linear-gradient(135deg, rgba(131,58,180,0.15), rgba(246,126,42,0.15));
+  border: 1px solid rgba(246,126,42,0.25);
+  font-family: var(--font-heading);
+  font-size: 0.58rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--orange);
+  transition: background 0.28s ease, color 0.28s ease;
+  width: fit-content;
+}
+a.team-card:hover .team-ig-cta {
+  background: linear-gradient(135deg, rgba(131,58,180,0.4), rgba(246,126,42,0.4));
+  color: #fff;
+}
+
+/* ── CORNER BRACKETS (reused from prev) ─────────────────────── */
+.img-corner {
+  position: absolute;
+  width: 16px; height: 16px;
+  z-index: 9;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.img-corner--tl { top: 8px;  left: 8px;  border-top: 2px solid var(--orange); border-left:  2px solid var(--orange); transform: translate(-4px,-4px); }
+.img-corner--tr { top: 8px;  right: 8px; border-top: 2px solid var(--orange); border-right: 2px solid var(--orange); transform: translate( 4px,-4px); }
+.img-corner--bl { bottom: 8px; left: 8px;  border-bottom: 2px solid var(--orange); border-left:  2px solid var(--orange); transform: translate(-4px, 4px); }
+.img-corner--br { bottom: 8px; right: 8px; border-bottom: 2px solid var(--orange); border-right: 2px solid var(--orange); transform: translate( 4px, 4px); }
+
+a.team-card:hover .img-corner,
+.trio-card:hover    .img-corner { opacity: 1; transform: translate(0,0); }
