@@ -29,7 +29,7 @@
 
 <!-- ============================================================ HEADER ============================================================ -->
 <header id="header">
-  <a href="/" class="nav-logo">
+  <a href="index.html" class="nav-logo">
     <img src="assets/images/logo.png" alt="JRCK Logo" class="logo-svg" style="object-fit:contain;">
     <div>
       <span class="nav-logo-text">JRCK</span>
@@ -39,7 +39,7 @@
 
   <nav>
     <ul class="nav-links">
-      <li><a href="/" class="active">Home</a></li>
+      <li><a href="index.html" class="active">Home</a></li>
       <li class="dropdown">
         <a href="about.html">About <span class="dropdown-arrow">▾</span></a>
         <ul class="dropdown-menu">
@@ -63,7 +63,7 @@
 
 <!-- Mobile Nav -->
 <nav class="nav-mobile">
-  <a href="/">Home</a>
+  <a href="index.html">Home</a>
   <a href="about.html">About JRCK</a>
   <a href="events.html" class="mobile-sub">↳ Events & Rides</a>
   <a href="team.html" class="mobile-sub">↳ Our Team</a>
@@ -99,6 +99,152 @@
     <div class="scroll-line"></div>
   </div>
 </section>
+
+<!-- ============================================================
+     JRCK COUNTDOWN SECTION
+     Place this block immediately after the closing </section> tag
+     of the HERO section (after line: </section> <!-- /hero 
+============================================================ -->
+
+<!-- ============================================================ COUNTDOWN SECTION ============================================================ -->
+<section class="jrck-countdown" id="countdownSection" aria-label="Kakkadampoyil Monsoon Ride Countdown">
+
+  <!-- Floating particle canvas -->
+  <canvas class="jrck-cd-particles" id="cdParticles" aria-hidden="true"></canvas>
+
+  <!-- Rotating glow orb behind timer -->
+  <div class="jrck-cd-glow-orb" aria-hidden="true"></div>
+
+  <!-- Animated shimmer sweep across the whole section -->
+  <div class="jrck-cd-shimmer" aria-hidden="true"></div>
+
+  <div class="jrck-cd-inner">
+
+    <!-- ── Event Badge ── -->
+    <div class="jrck-cd-badge" data-cd-anim="fade-up" data-cd-delay="0">
+      <span class="jrck-cd-badge-dot"></span>
+      Upcoming Ride
+      <span class="jrck-cd-badge-dot"></span>
+    </div>
+
+    <!-- ── Event Title ── -->
+    <h2 class="jrck-cd-title" data-cd-anim="fade-up" data-cd-delay="1">
+      Kakkadampoyil<br>
+      <span class="jrck-cd-title-accent">Monsoon Ride</span>
+    </h2>
+    <p class="jrck-cd-subtitle" data-cd-anim="fade-up" data-cd-delay="2">
+      Peak of Wonder
+    </p>
+    <p class="jrck-cd-tagline" data-cd-anim="fade-up" data-cd-delay="3">
+      Two days of adventure, misty roads, mountain views, and unforgettable brotherhood.
+    </p>
+
+    <!-- ── Countdown Timer Block ── -->
+    <div class="jrck-cd-timer-wrap" data-cd-anim="fade-up" data-cd-delay="4">
+
+      <!-- Animated glowing border ring -->
+      <div class="jrck-cd-timer-ring" aria-hidden="true"></div>
+
+      <!-- Countdown cards -->
+      <div class="jrck-cd-cards" id="cdCards">
+
+        <div class="jrck-cd-card" id="cd-days">
+          <div class="jrck-cd-card-inner">
+            <span class="jrck-cd-number" id="cdDays">00</span>
+            <span class="jrck-cd-label">Days</span>
+          </div>
+          <div class="jrck-cd-card-glow" aria-hidden="true"></div>
+        </div>
+
+        <div class="jrck-cd-sep" aria-hidden="true">:</div>
+
+        <div class="jrck-cd-card" id="cd-hours">
+          <div class="jrck-cd-card-inner">
+            <span class="jrck-cd-number" id="cdHours">00</span>
+            <span class="jrck-cd-label">Hours</span>
+          </div>
+          <div class="jrck-cd-card-glow" aria-hidden="true"></div>
+        </div>
+
+        <div class="jrck-cd-sep" aria-hidden="true">:</div>
+
+        <div class="jrck-cd-card" id="cd-minutes">
+          <div class="jrck-cd-card-inner">
+            <span class="jrck-cd-number" id="cdMinutes">00</span>
+            <span class="jrck-cd-label">Minutes</span>
+          </div>
+          <div class="jrck-cd-card-glow" aria-hidden="true"></div>
+        </div>
+
+        <div class="jrck-cd-sep" aria-hidden="true">:</div>
+
+        <div class="jrck-cd-card" id="cd-seconds">
+          <div class="jrck-cd-card-inner">
+            <span class="jrck-cd-number" id="cdSeconds">00</span>
+            <span class="jrck-cd-label">Seconds</span>
+          </div>
+          <div class="jrck-cd-card-glow" aria-hidden="true"></div>
+        </div>
+
+      </div>
+
+      <!-- Status text below timer -->
+      <p class="jrck-cd-status" id="cdStatus">
+        <span class="jrck-cd-status-dot" aria-hidden="true"></span>
+        The journey begins soon — throttle ready, brotherhood waiting.
+      </p>
+
+    </div>
+    <!-- /timer-wrap -->
+
+    <!-- ── Post-Countdown Message Block (hidden by default) ── -->
+    <div class="jrck-cd-ended" id="cdEnded" aria-live="polite">
+      <p class="jrck-cd-ended-msg" id="cdEndedMsg"></p>
+    </div>
+
+    <!-- ── Confetti canvas (activates at zero) ── -->
+    <canvas class="jrck-cd-confetti" id="cdConfetti" aria-hidden="true"></canvas>
+
+    <!-- ── Ride Details Row ── -->
+    <div class="jrck-cd-details" data-cd-anim="fade-up" data-cd-delay="5">
+
+      <div class="jrck-cd-detail-item">
+        <span class="jrck-cd-detail-icon"><i class="fa-regular fa-calendar" aria-hidden="true"></i></span>
+        <span class="jrck-cd-detail-label">Date</span>
+        <span class="jrck-cd-detail-value">11 – 12 July 2026</span>
+      </div>
+
+      <div class="jrck-cd-detail-divider" aria-hidden="true"></div>
+
+      <div class="jrck-cd-detail-item">
+        <span class="jrck-cd-detail-icon"><i class="fa-regular fa-clock" aria-hidden="true"></i></span>
+        <span class="jrck-cd-detail-label">Duration</span>
+        <span class="jrck-cd-detail-value">2 Days</span>
+      </div>
+
+      <div class="jrck-cd-detail-divider" aria-hidden="true"></div>
+
+      <div class="jrck-cd-detail-item">
+        <span class="jrck-cd-detail-icon"><i class="fa-solid fa-mountain" aria-hidden="true"></i></span>
+        <span class="jrck-cd-detail-label">Destination</span>
+        <span class="jrck-cd-detail-value">Kakkadampoyil</span>
+      </div>
+
+    </div>
+    <!-- /details row -->
+
+    <!-- ── CTA Button ── -->
+    <!-- <div class="jrck-cd-cta-wrap" data-cd-anim="fade-up" data-cd-delay="6"> -->
+      <!-- <a href="contact.html#membership" class="jrck-cd-cta btn btn-primary"> -->
+        <!-- <span>🏍️</span>&nbsp; Join The Ride -->
+      <!-- </a> -->
+    <!-- </div> -->
+
+  </div>
+  <!-- /inner -->
+
+</section>
+<!-- /jrck-countdown -->
 
 <!-- ============================================================ ABOUT INTRO ============================================================ -->
 <section class="about-intro section-pad">
@@ -452,7 +598,7 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
-          <a href="/" class="nav-logo">
+          <a href="index.html" class="nav-logo">
             <img src="assets/images/logo.png" alt="JRCK Logo" class="logo-svg" style="object-fit:contain;">
             <div>
               <span class="nav-logo-text">JRCK</span>
@@ -483,11 +629,11 @@
         <div>
           <h4 class="footer-heading">Quick Links</h4>
           <ul class="footer-links">
-            <li><a href="/">Home</a></li>
+            <li><a href="index.html">Home</a></li>
             <li><a href="about.html">About JRCK</a></li>
             <li><a href="events.html">Events & Rides</a></li>
             <li><a href="team.html">Our Team</a></li>
-            <!--<li><a href="blog.html">Blog</a></li>-->
+            <li><a href="blog.html">Blog</a></li>
             <li><a href="contact.html">Contact</a></li>
           </ul>
         </div>
