@@ -678,3 +678,280 @@
   })();
 
 })();
+
+
+
+
+/* ============================================================
+   JRCK Countdown Section — Vanilla JS
+   Paste this block inside the existing IIFE in script.js,
+   OR include it as a standalone <script> before </body>.
+
+   Target: 11 July 2026 · 05:00 AM IST (UTC+5:30)
+   ============================================================ */
+
+(function () {
+  'use strict';
+
+  /* ──────────────────────────────────────────────────────────
+     CONFIG
+  ────────────────────────────────────────────────────────── */
+  // IST = UTC+5:30 → offset 330 minutes
+  const TARGET_IST = new Date('2026-07-11T05:00:00+05:30').getTime();
+
+  /* ──────────────────────────────────────────────────────────
+     ELEMENT REFERENCES
+  ────────────────────────────────────────────────────────── */
+  const section      = document.getElementById('countdownSection');
+  if (!section) return;                  // guard: abort if section not in DOM
+
+  const elDays       = document.getElementById('cdDays');
+  const elHours      = document.getElementById('cdHours');
+  const elMinutes    = document.getElementById('cdMinutes');
+  const elSeconds    = document.getElementById('cdSeconds');
+  const elCards      = document.getElementById('cdCards');
+  const elStatus     = document.getElementById('cdStatus');
+  const elEnded      = document.getElementById('cdEnded');
+  const elEndedMsg   = document.getElementById('cdEndedMsg');
+  const cdParticles  = document.getElementById('cdParticles');
+  const cdConfetti   = document.getElementById('cdConfetti');
+
+  /* ──────────────────────────────────────────────────────────
+     SCROLL ENTRANCE ANIMATION (IntersectionObserver)
+  ────────────────────────────────────────────────────────── */
+  const animEls = section.querySelectorAll('[data-cd-anim]');
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('jrck-cd-animated');
+          io.unobserve(e.target);
+        }
+      });
+    },
+    { threshold: 0.12 }
+  );
+  animEls.forEach((el) => io.observe(el));
+
+  /* ──────────────────────────────────────────────────────────
+     FLOATING PARTICLES
+  ────────────────────────────────────────────────────────── */
+  (function initParticles() {
+    const canvas = cdParticles;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const particles = [];
+    const PARTICLE_COUNT = 55;
+
+    function resize() {
+      canvas.width  = section.offsetWidth;
+      canvas.height = section.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x:     Math.random() * canvas.width,
+        y:     Math.random() * canvas.height,
+        r:     Math.random() * 1.8 + 0.4,
+        alpha: Math.random() * 0.5 + 0.1,
+        dx:    (Math.random() - 0.5) * 0.35,
+        dy:    -(Math.random() * 0.5 + 0.2),
+        hue:   Math.random() > 0.7 ? 30 : 0   // 0 = white-ish, 30 = amber-ish
+      });
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        if (p.hue === 30) {
+          ctx.fillStyle = `rgba(246,126,42,${p.alpha})`;
+        } else {
+          ctx.fillStyle = `rgba(255,255,255,${p.alpha * 0.6})`;
+        }
+        ctx.fill();
+
+        p.x += p.dx;
+        p.y += p.dy;
+        p.alpha += (Math.random() - 0.5) * 0.008;
+        p.alpha = Math.max(0.05, Math.min(0.7, p.alpha));
+
+        // Wrap edges
+        if (p.y < -4)                p.y = canvas.height + 4;
+        if (p.x < -4)                p.x = canvas.width  + 4;
+        if (p.x > canvas.width  + 4) p.x = -4;
+      });
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+  })();
+
+  /* ──────────────────────────────────────────────────────────
+     HELPERS
+  ────────────────────────────────────────────────────────── */
+  function pad(n) {
+    return String(n).padStart(2, '0');
+  }
+
+  function triggerPulse(el) {
+    el.classList.remove('jrck-cd-pulse');
+    void el.offsetWidth; // reflow to restart animation
+    el.classList.add('jrck-cd-pulse');
+  }
+
+  /* ──────────────────────────────────────────────────────────
+     COUNTDOWN ENGINE
+  ────────────────────────────────────────────────────────── */
+  let prevSeconds = -1;
+  let prevMinutes = -1;
+  let prevHours   = -1;
+  let prevDays    = -1;
+
+  function tick() {
+    const now  = Date.now();
+    const diff = TARGET_IST - now;
+
+    if (diff <= 0) {
+      // Zero reached — show zero values then trigger end sequence
+      setValues(0, 0, 0, 0);
+      onCountdownEnd();
+      return;
+    }
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const secs  = totalSeconds % 60;
+    const mins  = Math.floor(totalSeconds / 60) % 60;
+    const hrs   = Math.floor(totalSeconds / 3600) % 24;
+    const days  = Math.floor(totalSeconds / 86400);
+
+    setValues(days, hrs, mins, secs);
+
+    if (secs  !== prevSeconds) { triggerPulse(elSeconds); prevSeconds = secs; }
+    if (mins  !== prevMinutes) { triggerPulse(elMinutes); prevMinutes = mins; }
+    if (hrs   !== prevHours)   { triggerPulse(elHours);   prevHours   = hrs;  }
+    if (days  !== prevDays)    { triggerPulse(elDays);    prevDays    = days; }
+
+    setTimeout(tick, 1000);
+  }
+
+  function setValues(d, h, m, s) {
+    elDays.textContent    = pad(d);
+    elHours.textContent   = pad(h);
+    elMinutes.textContent = pad(m);
+    elSeconds.textContent = pad(s);
+  }
+
+  /* ──────────────────────────────────────────────────────────
+     END SEQUENCE
+  ────────────────────────────────────────────────────────── */
+  function onCountdownEnd() {
+    // 1. Launch confetti
+    launchConfetti();
+
+    // 2. Fade out countdown cards
+    elCards.style.transition = 'opacity 1s ease, transform 1s ease';
+    elCards.style.opacity    = '0';
+    elCards.style.transform  = 'scale(0.9)';
+    elStatus.style.transition = 'opacity 0.8s ease';
+    elStatus.style.opacity   = '0';
+
+    const messages = [
+      { text: '🏍️ The Ride Has Started!',            delay: 1200,  glow: false },
+      { text: 'Thank you for riding with JRCK.',      delay: 6200,  glow: false },
+      { text: 'Please wait for the next adventure.',  delay: 11200, glow: false },
+      { text: 'Next Ride Announcement Coming Soon',   delay: 16200, glow: true  }
+    ];
+
+    // Show ended block
+    setTimeout(() => {
+      elCards.style.display = 'none';
+      elStatus.style.display = 'none';
+      elEnded.classList.add('jrck-cd-visible');
+    }, 1000);
+
+    messages.forEach(({ text, delay, glow }) => {
+      setTimeout(() => {
+        elEndedMsg.className = 'jrck-cd-ended-msg' + (glow ? ' jrck-cd-glow-text' : '');
+        elEndedMsg.textContent = text;
+        // Restart animation
+        elEndedMsg.style.animation = 'none';
+        void elEndedMsg.offsetWidth;
+        elEndedMsg.style.animation = '';
+      }, delay);
+    });
+  }
+
+  /* ──────────────────────────────────────────────────────────
+     CONFETTI BURST
+  ────────────────────────────────────────────────────────── */
+  function launchConfetti() {
+    const canvas = cdConfetti;
+    if (!canvas) return;
+    canvas.width  = section.offsetWidth;
+    canvas.height = section.offsetHeight;
+    canvas.classList.add('jrck-cd-active');
+    const ctx = canvas.getContext('2d');
+
+    const COLORS = [
+      '#F67E2A', '#ff9a4d', '#fff', '#ffd700',
+      '#ff6b35', '#ffe66d', '#c95e10', '#f9c74f'
+    ];
+    const pieces = [];
+    const COUNT  = 160;
+
+    for (let i = 0; i < COUNT; i++) {
+      pieces.push({
+        x:  canvas.width  / 2 + (Math.random() - 0.5) * 80,
+        y:  canvas.height / 2,
+        w:  Math.random() * 8 + 5,
+        h:  Math.random() * 4 + 3,
+        vx: (Math.random() - 0.5) * 14,
+        vy: (Math.random() * -14) - 4,
+        angle: Math.random() * 360,
+        spin:  (Math.random() - 0.5) * 12,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        alpha: 1
+      });
+    }
+
+    let frame = 0;
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces.forEach((p) => {
+        p.x     += p.vx;
+        p.y     += p.vy;
+        p.vy    += 0.45;    // gravity
+        p.vx    *= 0.99;    // air resistance
+        p.angle += p.spin;
+        p.alpha -= 0.012;
+
+        if (p.alpha <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.angle * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      });
+
+      frame++;
+      if (frame < 160) {
+        requestAnimationFrame(drawConfetti);
+      } else {
+        canvas.classList.remove('jrck-cd-active');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+    drawConfetti();
+  }
+
+  /* ──────────────────────────────────────────────────────────
+     KICK OFF
+  ────────────────────────────────────────────────────────── */
+  tick();
+
+})();
