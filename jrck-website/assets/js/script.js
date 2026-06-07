@@ -550,4 +550,131 @@
     scrollParallaxSections(); /* Initial call */
   }
 
+
+  /* ============================================================
+     15. PROFILE IMAGE HANDLING
+         - img-loaded class fade-in when image loads
+         - onerror: hide img, show letter placeholder
+         - Hover shimmer trigger (CSS handles animation)
+  ============================================================ */
+  (function initProfileImages() {
+    const profileImgSelectors = [
+      '.team-img img',
+      '.team-leader-img img',
+      '.leader-equal-img-wrap img',
+    ];
+
+    profileImgSelectors.forEach(selector => {
+      $$(selector).forEach(img => {
+        /* Already loaded (cached) */
+        if (img.complete && img.naturalWidth > 0) {
+          img.classList.add('img-loaded');
+          hidePlaceholder(img);
+        }
+
+        img.addEventListener('load', function () {
+          this.classList.add('img-loaded');
+          hidePlaceholder(this);
+        });
+
+        img.addEventListener('error', function () {
+          /* Image not found — hide img tag, reveal letter placeholder */
+          this.style.display = 'none';
+          showPlaceholder(this);
+        });
+      });
+    });
+
+    function hidePlaceholder(img) {
+      const wrap = img.parentElement;
+      const ph = wrap.querySelector('.team-img-placeholder, .leader-img-placeholder');
+      if (ph) ph.style.opacity = '0';
+    }
+
+    function showPlaceholder(img) {
+      const wrap = img.parentElement;
+      const ph = wrap.querySelector('.team-img-placeholder, .leader-img-placeholder');
+      if (ph) {
+        ph.style.opacity = '';  /* Restore CSS default */
+        ph.style.display = 'flex';
+      }
+    }
+  
+  /* ============================================================
+     TEAM PAGE — Profile Instagram click & cursor cues
+     All trio-card and team-card elements are <a> tags linking
+     to Instagram. JS reinforces cursor and adds touch ripple.
+  ============================================================ */
+  (function initTeamProfiles() {
+    const IG_URL = 'https://www.instagram.com/the_modern_roadster?igsh=MXFjZzgydHFvaXU0bQ==';
+
+    /* Ensure every profile card has the correct href
+       (guards against CMS or template overrides) */
+    $$('.trio-card, a.team-card').forEach(card => {
+      if (card.tagName === 'A') {
+        card.href        = IG_URL;
+        card.target      = '_blank';
+        card.rel         = 'noopener noreferrer';
+        card.style.cursor = 'pointer';
+      }
+    });
+
+    /* Touch devices: brief scale-down feedback on tap */
+    $$('.trio-card, a.team-card').forEach(card => {
+      card.addEventListener('touchstart', () => {
+        card.style.transition = 'transform 0.12s ease';
+        card.style.transform  = 'scale(0.97)';
+      }, { passive: true });
+      card.addEventListener('touchend', () => {
+        setTimeout(() => {
+          card.style.transform  = '';
+          card.style.transition = '';
+        }, 160);
+      }, { passive: true });
+    });
+
+    /* Intersection observer — staggered fade-in for team-cards */
+    if ('IntersectionObserver' in window) {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('visible');
+          obs.unobserve(entry.target);
+        });
+      }, { threshold: 0.1 });
+
+      $$('.trio-card, .team-card').forEach((el, i) => {
+        const col = i % 4;
+        el.style.transitionDelay = `${col * 0.07}s`;
+        obs.observe(el);
+      });
+    }
+  })();
+
+})();
+
+  /* ============================================================
+     16. PROFILE IMAGE INTERSECTION REVEAL
+         Staggered reveal for team-grid cards as they scroll in
+  ============================================================ */
+  (function initCardReveal() {
+    const cards = $$('.team-card, .leader-equal-card');
+    if (!cards.length || !('IntersectionObserver' in window)) return;
+
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('visible');
+        obs.unobserve(entry.target);
+      });
+    }, { threshold: 0.12 });
+
+    cards.forEach((card, i) => {
+      /* Add stagger delay based on position */
+      const col = i % 4;
+      card.style.transitionDelay = `${col * 0.08}s`;
+      obs.observe(card);
+    });
+  })();
+
 })();
