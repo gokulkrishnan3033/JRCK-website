@@ -606,50 +606,52 @@
      to Instagram. JS reinforces cursor and adds touch ripple.
   ============================================================ */
   (function initTeamProfiles() {
-    const IG_URL = 'https://www.instagram.com/the_modern_roadster?igsh=MXFjZzgydHFvaXU0bQ==';
 
-    /* Ensure every profile card has the correct href
-       (guards against CMS or template overrides) */
-    $$('.trio-card, a.team-card').forEach(card => {
-      if (card.tagName === 'A') {
-        card.href        = IG_URL;
-        card.target      = '_blank';
-        card.rel         = 'noopener noreferrer';
-        card.style.cursor = 'pointer';
-      }
-    });
+  // Keep existing href values from HTML
+  document.querySelectorAll('.trio-card, .team-card').forEach(card => {
 
-    /* Touch devices: brief scale-down feedback on tap */
-    $$('.trio-card, a.team-card').forEach(card => {
-      card.addEventListener('touchstart', () => {
-        card.style.transition = 'transform 0.12s ease';
-        card.style.transform  = 'scale(0.97)';
-      }, { passive: true });
-      card.addEventListener('touchend', () => {
-        setTimeout(() => {
-          card.style.transform  = '';
-          card.style.transition = '';
-        }, 160);
-      }, { passive: true });
-    });
-
-    /* Intersection observer — staggered fade-in for team-cards */
-    if ('IntersectionObserver' in window) {
-      const obs = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add('visible');
-          obs.unobserve(entry.target);
-        });
-      }, { threshold: 0.1 });
-
-      $$('.trio-card, .team-card').forEach((el, i) => {
-        const col = i % 4;
-        el.style.transitionDelay = `${col * 0.07}s`;
-        obs.observe(el);
-      });
+    if (card.tagName === 'A') {
+      card.target = '_blank';
+      card.rel = 'noopener noreferrer';
+      card.style.cursor = 'pointer';
     }
-  })();
+
+    // Touch feedback
+    card.addEventListener('touchstart', () => {
+      card.style.transition = 'transform 0.12s ease';
+      card.style.transform = 'scale(0.97)';
+    }, { passive: true });
+
+    card.addEventListener('touchend', () => {
+      setTimeout(() => {
+        card.style.transform = '';
+        card.style.transition = '';
+      }, 160);
+    }, { passive: true });
+
+  });
+
+  // Fade-in animation
+  if ('IntersectionObserver' in window) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+
+        entry.target.classList.add('visible');
+        obs.unobserve(entry.target);
+      });
+    }, {
+      threshold: 0.1
+    });
+
+    document.querySelectorAll('.trio-card, .team-card').forEach((el, i) => {
+      const col = i % 4;
+      el.style.transitionDelay = `${col * 0.07}s`;
+      obs.observe(el);
+    });
+  }
+
+})();
 
 })();
 
